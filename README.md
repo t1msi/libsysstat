@@ -1,0 +1,298 @@
+## sysstat
+
+sadc sadf only - без вывода в терминал
+
+Files:
+```
+
+all: sadc sadf iostat tapestat mpstat pidstat cifsiostat locales
+
+---
+sadc: LFLAGS += $(LFSENSORS)
+
+sadc: sadc.o act_sadc.o sa_wrap.o sa_common_light.o common_light.o systest.o librdstats.a librdsensors.a libsyscom.a
+
+sadc.o: sadc.c sa.h version.h common.h rd_stats.h rd_sensors.h
+
+act_sadc.o: activity.c sa.h common.h rd_stats.h rd_sensors.h
+    $(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADC $(DFLAGS) $<
+
+sa_wrap.o: sa_wrap.c sa.h common.h rd_stats.h count.h rd_sensors.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADC $(DFLAGS) $<
+
+sa_common_light.o: sa_common.c version.h sa.h common.h rd_stats.h rd_sensors.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADC $(DFLAGS) $<
+
+common_light.o: common.c version.h common.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADC $(DFLAGS) $<
+
+systest.o: systest.c systest.h
+
+count.o: count.c common.h rd_stats.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADC $(DFLAGS) $<
+
+librdstats.a: rd_stats.o count.o
+	$(AR) rvs $@ $?
+
+# librdsensors.a: librdsensors.a(rd_sensors.o)
+librdsensors.a: rd_sensors.o
+	$(AR) rvs $@ $?
+
+libsyscom.a: common.o ioconf.o systest.o
+	$(AR) rvs $@ $?
+
+rd_sensors.o: rd_sensors.c common.h rd_sensors.h rd_stats.h
+
+rd_stats.o: rd_stats.c common.h rd_stats.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADC $(DFLAGS) $<
+
+---
+
+sadf.o: sadf.c sadf.h version.h sa.h common.h rd_stats.h rd_sensors.h
+
+sadf: LFLAGS += $(LFPCP)
+
+sadf: sadf.o act_sadf.o format_sadf.o sadf_misc.o pcp_def_metrics.o sa_conv.o rndr_stats.o xml_stats.o json_stats.o svg_stats.o raw_stats.o pcp_stats.o sa_common.o librdstats_light.a libsyscom.a
+
+act_sadf.o: activity.c sa.h common.h rd_stats.h rd_sensors.h rndr_stats.h xml_stats.h json_stats.h svg_stats.h raw_stats.h pcp_stats.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADF $(DFLAGS) $<
+
+format_sadf.o: format.c sadf.h sa.h common.h rd_stats.h rd_sensors.h
+	$(CC) -o $@ -c $(CFLAGS) -DSOURCE_SADF $(DFLAGS) $<
+
+sadf_misc.o: sadf_misc.c sadf.h pcp_def_metrics.h sa.h common.h rd_stats.h rd_sensors.h
+
+pcp_def_metrics.o: pcp_def_metrics.c common.h sa.h rd_stats.h rd_sensors.h
+
+sa_conv.o: sa_conv.c version.h sadf.h sa.h common.h rd_stats.h rd_sensors.h sa_conv.h
+
+rndr_stats.o: rndr_stats.c sa.h common.h rd_stats.h rd_sensors.h rndr_stats.h
+
+xml_stats.o: xml_stats.c sa.h common.h rd_stats.h rd_sensors.h ioconf.h sysconfig.h
+
+json_stats.o: json_stats.c sa.h common.h rd_stats.h rd_sensors.h
+
+svg_stats.o: svg_stats.c sa.h common.h rd_stats.h rd_sensors.h ioconf.h sysconfig.h
+
+raw_stats.o: raw_stats.c sa.h common.h rd_stats.h rd_sensors.h
+
+pcp_stats.o: pcp_stats.c common.h rd_stats.h rd_sensors.h sa.h
+
+sa_common.o: sa_common.c version.h sa.h common.h rd_stats.h rd_sensors.h
+
+common.o: common.c version.h common.h
+
+rd_stats_light.o: rd_stats.c common.h rd_stats.h ioconf.h sysconfig.h
+	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
+
+count_light.o: count.c common.h rd_stats.h
+	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
+
+systest.o: systest.c systest.h
+
+ioconf.o: ioconf.c ioconf.h common.h sysconfig.h
+
+librdstats_light.a: rd_stats_light.o count_light.o
+	$(AR) rvs $@ $?
+
+libsyscom.a: common.o ioconf.o systest.o
+	$(AR) rvs $@ $?
+```
+
+## sysstat - System performance tools for the Linux operating system
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/4040/badge.svg)](https://scan.coverity.com/projects/sysstat-sysstat)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=45U6F9R73ESFQ)
+
+(C) 1999-2025 Sebastien GODARD (sysstat (at) orange (dot) fr)
+
+### Introduction
+
+The sysstat package contains various utilities, common to many commercial Unixes, to monitor system performance and usage activity:
+
+* **iostat** reports CPU statistics and input/output statistics for block devices and partitions.
+* **mpstat** reports individual or combined processor related statistics.
+* **pidstat** reports statistics for Linux tasks (processes) : I/O, CPU, memory, etc.
+* **tapestat** reports statistics for tape drives connected to the system.
+* **cifsiostat** reports CIFS statistics.
+
+Sysstat also contains tools you can schedule via cron or systemd to collect and historize performance and activity data:
+
+* **sar** collects, reports and saves system activity information (see below a list of metrics collected by sar).
+* **sadc** is the system activity data collector, used as a backend for sar.
+* **sa1** collects and stores binary data in the system activity daily data file. It is a front end to sadc designed to be run from cron or systemd.
+* **sa2** writes a summarized daily activity report. It is a front end to sar designed to be run from cron or systemd.
+* **sadf** displays data collected by sar in multiple formats (CSV, XML, JSON, etc.) and can be used for data exchange with other programs. This command can also be used to draw graphs for the various activities collected by sar using SVG (Scalable Vector Graphics) format.
+
+Default sampling interval is 10 minutes but this can be changed of course (it can be as small as 1 second).
+
+#### System statistics collected by sar:
+- Input / Output and transfer rate statistics (global, per device, per partition and per network filesystem)
+- CPU statistics (global and per CPU), including support for virtualization architectures
+- Memory, hugepages and swap space utilization statistics
+- Virtual memory, paging and fault statistics
+- Process creation activity
+- Interrupt statistics (global, per CPU and per interrupt, including potential APIC interrupt sources, hardware and software interrupts)
+- Extensive network statistics: network interface activity (number of packets and kB received and transmitted per second, etc.) including failures from network devices; network traffic statistics for IP, TCP, ICMP and UDP protocols based on SNMPv2 standards; support for IPv6-related protocols
+- Fibre Channel traffic statistics
+- Software-based network processing (softnet) statistics
+- NFS server and client activity
+- Sockets statistics
+- Run queue and system load statistics
+- Kernel internal tables utilization statistics
+- Swapping statistics
+- TTY devices activity
+- Power management statistics (instantaneous and average CPU clock frequency, fans speed, devices temperature, voltage inputs)
+- USB devices plugged into the system
+- Filesystems utilization (inodes and blocks)
+- Pressure-Stall Information statistics
+
+#### Sysstat key features:
+- Display average statistics values at the end of the reports.
+- On-the-fly detection of new devices (disks, network interfaces, etc.) that are created or registered dynamically.
+- Support for UP and SMP machines, including machines with hyperthreaded or multi-core processors.
+- Support for hotplug CPUs (it detects automagically processors that are disabled or enabled on the fly) and tickless CPUs.
+- Works on many different architectures, whether 32- or 64-bit.
+- Needs very little CPU time to run (written in C).
+- System statistics collected by sar/sadc can be saved in a file for future inspection. You can configure the length of data history to keep. There is no limit for this history length but the available space on your storage device.
+- System statistics collected by sar/sadc can be exported in various different formats (CSV, XML, JSON, SVG, etc.). DTD and XML Schema documents are included in sysstat package. JSON output format is also available for mpstat and iostat commands.
+- iostat can display statistics for devices managed by drivers in userspace like spdk.
+- Smart color output for easier statistics reading.
+
+![Smart color output](images/color_output.png)
+- Internationalization support (sysstat has been translated into numerous different languages). Sysstat is now part of the [Translation Project](http://translationproject.org/).
+- Sysstat commands can automatically select the unit used to display sizes for easier reading (see option `--human`):
+
+![Sample iostat output](images/iostat.png)
+
+- Graphs can be generated (SVG format - Scalable Vector Graphics) and displayed in your favorite web browser. See some sample screenshots below:
+
+![Fancy sysstat graph](images/cpugraph.jpg)
+
+![Fancy sysstat graph](images/tcgraph.png)
+
+![Fancy sysstat graph](images/loadavg-svg.png)
+
+
+Sysstat is Open Source / Free Software, and is freely available under the GNU General Public License, version 2.
+The latest version of sysstat can always be found on my web site at:
+
+[https://sysstat.github.io/](https://sysstat.github.io/)
+
+See the CHANGES file to know the new features/improvements/bug fixes added
+in this release of sysstat.
+
+Note that sysstat no longer uses odd and even version numbers to identify development and stable
+versions. The latest sysstat release should always be considered as a stable version that can be
+used for distribution packaging.
+
+Sysstat development can be tracked on [GitHub](https://github.com/sysstat/sysstat).
+
+### Installation
+
+#### Install from RHEL/Fedora/CentOS
+
+Enter:
+
+```
+$ sudo yum install sysstat
+```
+
+CentOS and Fedora systems call the collector process using a cron job in /etc/cron.d and it's enabled by default.
+On recent versions, systemd is used instead of cron. You may need to enable and start the sysstat service:
+
+```
+$ sudo systemctl enable --now sysstat
+```
+
+(or enter:
+
+```
+$ sudo systemctl enable sysstat
+$ sudo systemctl start sysstat
+```
+
+if option `--now` is not supported by your systemd version.)
+
+#### Install from Ubuntu
+
+Enter:
+
+```
+$ sudo apt-get install sysstat
+```
+
+Then enable data collecting:
+
+```
+$ sudo dpkg-reconfigure sysstat
+Select "Yes"
+```
+
+#### Install from sources
+
+Clone sysstat public repository with:
+
+```
+$ git clone git://github.com/sysstat/sysstat
+```
+
+Then configure sysstat for your system:
+
+```
+$ cd sysstat
+$ ./configure
+```
+
+You can set several variables and parameters on the command line. For example you
+can enter the following option to activate data collecting (either using cron or systemd):
+
+```
+$ ./configure --enable-install-cron
+```
+
+Enter `./configure --help` to display all possible options.
+Note: There is another way to configure sysstat instead of entering `./configure`:
+This is the **Interactive Configuration script** (_iconfig_) which will ask you
+for the value of the main sysstat variables and parameters.
+Enter `./iconfig` then answer the questions or enter Return to accept
+the (sane) default values. For yes/no questions, answer 'y' or 'n'
+(without the quotes): It is case sensitive! You can also enter '?' to get
+a help message that will explain the meaning of each variable or parameter.
+
+Compile and install:
+
+```
+$ make
+$ sudo make install
+```
+
+### Feedback welcome!
+
+Please use the BUG_REPORT template file to report a bug: It contains important data
+that should be provided for this.
+Please also remember to read the FAQ that comes with sysstat or is available
+from the Wiki page on GitHub.
+
+Opening an issue or a pull request on GitHub is the preferred way to report a bug or submit a patch.
+Patches and suggestions for improvements are always welcome!
+
+### Support sysstat!
+
+If you are reading this README file then you are probably about to use the sysstat tools
+to help you monitor your system and maybe troubleshoot some performance issues. Good choice.
+Sysstat is made for you. Moreover sysstat is free software and always will be.
+
+Yet have you ever considered making a donation to sysstat, regardless of how much your
+contribution is? This in turn would encourage me to keep up the work as good as it can be...
+
+Click on the "Donate PayPal" button above at the beginning of this file.
+You can also make a donation as a sponsor from [the GitHub page](https://github.com/sysstat/sysstat) or from [my personal web page](https://sysstat.github.io/).
+
+Enjoy!
+
+--
+
+Sebastien GODARD - sysstat (at) orange (dot) fr
+
+
+
