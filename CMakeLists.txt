@@ -13,25 +13,9 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/lib/sysstat/")
 file(GLOB main_sources
         "${CMAKE_SOURCE_DIR}/src/main.cpp"
         )
-# file(GLOB baselib_sources
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/ProtocolClasses/crsf.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/ProtocolClasses/protocol.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/ProtocolClasses/sbus.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Calculation/bboxtowgs.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Calculation/statistics.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Calculation/formulaes.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Calculation/regulator.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Logic/logic.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Common/serialport.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Common/logdevice.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Common/config.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Common/gimbalinteraction.cpp"
-#         "${CMAKE_SOURCE_DIR}/lib/baselib/Common/network.cpp"
-#        )
 
 add_executable(stats
         ${main_sources}
-        # ${baselib_sources}
 )
 
 # add_library(stats SHARED
@@ -44,10 +28,9 @@ add_executable(stats
 target_include_directories(stats 
     PUBLIC    "${CMAKE_SOURCE_DIR}/include"
     PUBLIC    "${CMAKE_SOURCE_DIR}/lib/sysstat/include"
-    # PUBLIC    "${CMAKE_SOURCE_DIR}/lib/baselib/include"
 )
 
-target_link_libraries(stats rdstats rdsensors)
+target_link_libraries(stats saf)
 
 # If you have precompiled headers you can add them like this
 # target_precompiled_headers(stats PRIVATE "${CMAKE_SOURCE_DIR}/src/pch.h")
