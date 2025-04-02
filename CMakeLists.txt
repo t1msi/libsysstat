@@ -30,7 +30,7 @@ target_include_directories(stats
     PUBLIC    "${CMAKE_SOURCE_DIR}/lib/sysstat/include"
 )
 
-target_link_libraries(stats saf)
+target_link_libraries(stats)
 
 # If you have precompiled headers you can add them like this
 # target_precompiled_headers(stats PRIVATE "${CMAKE_SOURCE_DIR}/src/pch.h")

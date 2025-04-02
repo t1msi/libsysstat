@@ -23,6 +23,10 @@
 #include "sadf.h"
 #endif
 
+#ifdef SOURCE_SAF
+#include "saf.h"
+#endif
+
 #ifdef SOURCE_SAR
 #include "sa.h"
 #endif
@@ -195,5 +199,57 @@ struct report_format sar_fmt = {
 	.f_timestamp	= NULL,
 	.f_restart	= print_sar_restart,
 	.f_comment	= print_sar_comment
+};
+#endif
+
+#ifdef SOURCE_SAF
+/*
+ * Special output format for saf.
+ * Used only for functions to display special
+ * (RESTART and COMMENT) records.
+ */
+// struct report_format saf_fmt = {
+// 	.id		= F_SAF_OUTPUT,
+// 	.options	= 0,
+// 	.f_header	= NULL,
+// 	.f_statistics	= NULL,
+// 	.f_timestamp	= NULL,
+// 	.f_restart	= print_saf_restart,
+// 	.f_comment	= print_saf_comment
+// };
+/*
+ * JSON output.
+ */
+struct report_format json_fmt = {
+	.id		= F_JSON_OUTPUT,
+	.options	= FO_HEADER_ONLY + FO_LOCAL_TIME + FO_TEST_MARKUP +
+			  FO_LC_NUMERIC_C,
+	.f_header	= print_json_header,
+	.f_statistics	= print_json_statistics,
+	.f_timestamp	= print_json_timestamp,
+	.f_restart	= print_json_restart,
+	.f_comment	= print_json_comment,
+	// .f_display	= logic1_display_loop
+	// .f_display	= logic1_display_loop
+};
+/*
+ * Display only datafile header.
+ */
+struct report_format hdr_fmt = {
+	.id		= F_HEADER_OUTPUT,
+	.options	= FO_HEADER_ONLY,
+	.f_header	= print_hdr_header,
+	.f_statistics	= NULL,
+	.f_timestamp	= NULL,
+	.f_restart	= NULL,
+	.f_comment	= NULL,
+	.f_display	= NULL
+};
+/*
+ * Array of output formats.
+ */
+struct report_format *fmt[2] = {
+	&hdr_fmt,
+	&json_fmt
 };
 #endif

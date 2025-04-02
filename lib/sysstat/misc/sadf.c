@@ -30,7 +30,7 @@
 #include "version.h"
 #include "sadf.h"
 
-# include <locale.h>	/* For setlocale() */
+#include <locale.h>	/* For setlocale() */
 #ifdef USE_NLS
 # include <libintl.h>
 # define _(string) gettext(string)

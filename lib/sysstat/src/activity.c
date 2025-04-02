@@ -34,6 +34,10 @@
 #include "pcp_stats.h"
 #endif
 
+#ifdef SOURCE_SAF
+#include "json_stats.h"
+#endif
+
 /*
  ***************************************************************************
  * Definitions of system activities.
@@ -75,7 +79,11 @@ struct activity cpu_act = {
 	.f_print	= print_cpu_stats,
 	.f_print_avg	= print_cpu_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_cpu_stats,
+	.f_print_avg	= json_print_cpu_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "CPU;%user;%nice;%system;%iowait;%steal;%idle|"
 		          "CPU;%usr;%nice;%sys;%iowait;%steal;%irq;%soft;%guest;%gnice;%idle",
 #endif
@@ -88,6 +96,11 @@ struct activity cpu_act = {
 	.f_svg_print	= svg_print_cpu_stats,
 	.f_raw_print	= raw_print_cpu_stats,
 	.f_pcp_print	= pcp_print_cpu_stats,
+	.f_count_new	= NULL,
+	.desc		= "CPU utilization",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_cpu_stats,
 	.f_count_new	= NULL,
 	.desc		= "CPU utilization",
 #endif
@@ -127,7 +140,11 @@ struct activity pcsw_act = {
 	.f_print	= print_pcsw_stats,
 	.f_print_avg	= print_pcsw_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pcsw_stats,
+	.f_print_avg	= json_print_pcsw_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "proc/s;cswch/s",
 #endif
 	.gtypes_nr	= {STATS_PCSW_ULL, STATS_PCSW_UL, STATS_PCSW_U},
@@ -139,6 +156,11 @@ struct activity pcsw_act = {
 	.f_svg_print	= svg_print_pcsw_stats,
 	.f_raw_print	= raw_print_pcsw_stats,
 	.f_pcp_print	= pcp_print_pcsw_stats,
+	.f_count_new	= NULL,
+	.desc		= "Task creation and switching activity",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pcsw_stats,
 	.f_count_new	= NULL,
 	.desc		= "Task creation and switching activity",
 #endif
@@ -178,7 +200,11 @@ struct activity irq_act = {
 	.f_print	= print_irq_stats,
 	.f_print_avg	= print_irq_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_irq_stats,
+	.f_print_avg	= json_print_irq_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "INTR;CPU*",
 #endif
 	.gtypes_nr	= {STATS_IRQ_ULL, STATS_IRQ_UL, STATS_IRQ_U},
@@ -190,6 +216,11 @@ struct activity irq_act = {
 	.f_svg_print	= NULL,
 	.f_raw_print	= raw_print_irq_stats,
 	.f_pcp_print	= pcp_print_irq_stats,
+	.f_count_new	= count_new_int,
+	.desc		= "Interrupts statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_irq_stats,
 	.f_count_new	= count_new_int,
 	.desc		= "Interrupts statistics",
 #endif
@@ -229,7 +260,11 @@ struct activity swap_act = {
 	.f_print	= print_swap_stats,
 	.f_print_avg	= print_swap_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_swap_stats,
+	.f_print_avg	= json_print_swap_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "pswpin/s;pswpout/s",
 #endif
 	.gtypes_nr	= {STATS_SWAP_ULL, STATS_SWAP_UL, STATS_SWAP_U},
@@ -241,6 +276,11 @@ struct activity swap_act = {
 	.f_svg_print	= svg_print_swap_stats,
 	.f_raw_print	= raw_print_swap_stats,
 	.f_pcp_print	= pcp_print_swap_stats,
+	.f_count_new	= NULL,
+	.desc		= "Swap activity",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_swap_stats,
 	.f_count_new	= NULL,
 	.desc		= "Swap activity",
 #endif
@@ -280,7 +320,11 @@ struct activity paging_act = {
 	.f_print	= print_paging_stats,
 	.f_print_avg	= print_paging_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_paging_stats,
+	.f_print_avg	= json_print_paging_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "pgpgin/s;pgpgout/s;fault/s;majflt/s;"
 			  "pgfree/s;pgscank/s;pgscand/s;pgsteal/s;"
 			  "pgprom/s;pgdem/s",
@@ -294,6 +338,11 @@ struct activity paging_act = {
 	.f_svg_print	= svg_print_paging_stats,
 	.f_raw_print	= raw_print_paging_stats,
 	.f_pcp_print	= pcp_print_paging_stats,
+	.f_count_new	= NULL,
+	.desc		= "Paging activity",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_paging_stats,
 	.f_count_new	= NULL,
 	.desc		= "Paging activity",
 #endif
@@ -333,7 +382,11 @@ struct activity io_act = {
 	.f_print	= print_io_stats,
 	.f_print_avg	= print_io_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_io_stats,
+	.f_print_avg	= json_print_io_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "tps;rtps;wtps;dtps;bread/s;bwrtn/s;bdscd/s",
 #endif
 	.gtypes_nr	= {STATS_IO_ULL, STATS_IO_UL, STATS_IO_U},
@@ -345,6 +398,11 @@ struct activity io_act = {
 	.f_svg_print	= svg_print_io_stats,
 	.f_raw_print	= raw_print_io_stats,
 	.f_pcp_print	= pcp_print_io_stats,
+	.f_count_new	= NULL,
+	.desc		= "I/O and transfer rate statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_io_stats,
 	.f_count_new	= NULL,
 	.desc		= "I/O and transfer rate statistics",
 #endif
@@ -384,7 +442,12 @@ struct activity memory_act = {
 	.f_print	= print_memory_stats,
 	.f_print_avg	= print_avg_memory_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_memory_stats,
+	// .f_print_avg	= json_print_avg_memory_stats,
+	.f_print_avg	= json_print_memory_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "kbmemfree;kbavail;kbmemused;%memused;kbbuffers;kbcached;kbcommit;%commit;kbactive;kbinact;kbdirty&kbanonpg;kbslab;kbkstack;kbpgtbl;kbvmused|"
 		          "kbswpfree;kbswpused;%swpused;kbswpcad;%swpcad",
 #endif
@@ -397,6 +460,11 @@ struct activity memory_act = {
 	.f_svg_print	= svg_print_memory_stats,
 	.f_raw_print	= raw_print_memory_stats,
 	.f_pcp_print	= pcp_print_memory_stats,
+	.f_count_new	= NULL,
+	.desc		= "Memory and/or swap utilization",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_memory_stats,
 	.f_count_new	= NULL,
 	.desc		= "Memory and/or swap utilization",
 #endif
@@ -436,7 +504,12 @@ struct activity ktables_act = {
 	.f_print	= print_ktables_stats,
 	.f_print_avg	= print_avg_ktables_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_ktables_stats,
+	// .f_print_avg	= json_print_avg_ktables_stats,
+	.f_print_avg	= json_print_ktables_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "dentunusd;file-nr;inode-nr;pty-nr",
 #endif
 	.gtypes_nr	= {STATS_KTABLES_ULL, STATS_KTABLES_UL, STATS_KTABLES_U},
@@ -448,6 +521,11 @@ struct activity ktables_act = {
 	.f_svg_print	= svg_print_ktables_stats,
 	.f_raw_print	= raw_print_ktables_stats,
 	.f_pcp_print	= pcp_print_ktables_stats,
+	.f_count_new	= NULL,
+	.desc		= "Kernel tables statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_ktables_stats,
 	.f_count_new	= NULL,
 	.desc		= "Kernel tables statistics",
 #endif
@@ -487,7 +565,12 @@ struct activity queue_act = {
 	.f_print	= print_queue_stats,
 	.f_print_avg	= print_avg_queue_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_queue_stats,
+	// .f_print_avg	= json_print_avg_queue_stats,
+	.f_print_avg	= json_print_queue_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "runq-sz;plist-sz;ldavg-1;ldavg-5;ldavg-15;blocked",
 #endif
 	.gtypes_nr	= {STATS_QUEUE_ULL, STATS_QUEUE_UL, STATS_QUEUE_U},
@@ -499,6 +582,11 @@ struct activity queue_act = {
 	.f_svg_print	= svg_print_queue_stats,
 	.f_raw_print	= raw_print_queue_stats,
 	.f_pcp_print	= pcp_print_queue_stats,
+	.f_count_new	= NULL,
+	.desc		= "Queue length and load average statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_queue_stats,
 	.f_count_new	= NULL,
 	.desc		= "Queue length and load average statistics",
 #endif
@@ -538,7 +626,11 @@ struct activity serial_act = {
 	.f_print	= print_serial_stats,
 	.f_print_avg	= print_serial_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_serial_stats,
+	.f_print_avg	= json_print_serial_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "TTY;rcvin/s;xmtin/s;framerr/s;prtyerr/s;brk/s;ovrun/s",
 #endif
 	.gtypes_nr	= {STATS_SERIAL_ULL, STATS_SERIAL_UL, STATS_SERIAL_U},
@@ -550,6 +642,11 @@ struct activity serial_act = {
 	.f_svg_print	= NULL,
 	.f_raw_print	= raw_print_serial_stats,
 	.f_pcp_print	= pcp_print_serial_stats,
+	.f_count_new	= NULL,
+	.desc		= "TTY devices statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_serial_stats,
 	.f_count_new	= NULL,
 	.desc		= "TTY devices statistics",
 #endif
@@ -589,7 +686,11 @@ struct activity disk_act = {
 	.f_print	= print_disk_stats,
 	.f_print_avg	= print_disk_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_disk_stats,
+	.f_print_avg	= json_print_disk_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "DEV;tps;rkB/s;wkB/s;dkB/s;areq-sz;aqu-sz;await;%util",
 #endif
 	.gtypes_nr	= {STATS_DISK_ULL, STATS_DISK_UL, STATS_DISK_U},
@@ -601,6 +702,11 @@ struct activity disk_act = {
 	.f_svg_print	= svg_print_disk_stats,
 	.f_raw_print	= raw_print_disk_stats,
 	.f_pcp_print	= pcp_print_disk_stats,
+	.f_count_new	= count_new_disk,
+	.desc		= "Block devices statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_disk_stats,
 	.f_count_new	= count_new_disk,
 	.desc		= "Block devices statistics",
 #endif
@@ -640,7 +746,11 @@ struct activity net_dev_act = {
 	.f_print	= print_net_dev_stats,
 	.f_print_avg	= print_net_dev_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_dev_stats,
+	.f_print_avg	= json_print_net_dev_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "IFACE;rxpck/s;txpck/s;rxkB/s;txkB/s;rxcmp/s;txcmp/s;rxmcst/s;%ifutil",
 #endif
 	.gtypes_nr	= {STATS_NET_DEV_ULL, STATS_NET_DEV_UL, STATS_NET_DEV_U},
@@ -652,6 +762,11 @@ struct activity net_dev_act = {
 	.f_svg_print	= svg_print_net_dev_stats,
 	.f_raw_print	= raw_print_net_dev_stats,
 	.f_pcp_print	= pcp_print_net_dev_stats,
+	.f_count_new	= count_new_net_dev,
+	.desc		= "Network interfaces statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_dev_stats,
 	.f_count_new	= count_new_net_dev,
 	.desc		= "Network interfaces statistics",
 #endif
@@ -691,7 +806,11 @@ struct activity net_edev_act = {
 	.f_print	= print_net_edev_stats,
 	.f_print_avg	= print_net_edev_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_edev_stats,
+	.f_print_avg	= json_print_net_edev_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "IFACE;rxerr/s;txerr/s;coll/s;rxdrop/s;txdrop/s;"
 		          "txcarr/s;rxfram/s;rxfifo/s;txfifo/s",
 #endif
@@ -704,6 +823,11 @@ struct activity net_edev_act = {
 	.f_svg_print	= svg_print_net_edev_stats,
 	.f_raw_print	= raw_print_net_edev_stats,
 	.f_pcp_print	= pcp_print_net_edev_stats,
+	.f_count_new	= count_new_net_edev,
+	.desc		= "Network interfaces errors statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_edev_stats,
 	.f_count_new	= count_new_net_edev,
 	.desc		= "Network interfaces errors statistics",
 #endif
@@ -743,7 +867,11 @@ struct activity net_nfs_act = {
 	.f_print	= print_net_nfs_stats,
 	.f_print_avg	= print_net_nfs_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_nfs_stats,
+	.f_print_avg	= json_print_net_nfs_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "call/s;retrans/s;read/s;write/s;access/s;getatt/s",
 #endif
 	.gtypes_nr	= {STATS_NET_NFS_ULL, STATS_NET_NFS_UL, STATS_NET_NFS_U},
@@ -755,6 +883,11 @@ struct activity net_nfs_act = {
 	.f_svg_print	= svg_print_net_nfs_stats,
 	.f_raw_print	= raw_print_net_nfs_stats,
 	.f_pcp_print	= pcp_print_net_nfs_stats,
+	.f_count_new	= NULL,
+	.desc		= "NFS client statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_nfs_stats,
 	.f_count_new	= NULL,
 	.desc		= "NFS client statistics",
 #endif
@@ -794,7 +927,11 @@ struct activity net_nfsd_act = {
 	.f_print	= print_net_nfsd_stats,
 	.f_print_avg	= print_net_nfsd_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_nfsd_stats,
+	.f_print_avg	= json_print_net_nfsd_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "scall/s;badcall/s;packet/s;udp/s;tcp/s;hit/s;miss/s;"
 		          "sread/s;swrite/s;saccess/s;sgetatt/s",
 #endif
@@ -807,6 +944,11 @@ struct activity net_nfsd_act = {
 	.f_svg_print	= svg_print_net_nfsd_stats,
 	.f_raw_print	= raw_print_net_nfsd_stats,
 	.f_pcp_print	= pcp_print_net_nfsd_stats,
+	.f_count_new	= NULL,
+	.desc		= "NFS server statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_nfsd_stats,
 	.f_count_new	= NULL,
 	.desc		= "NFS server statistics",
 #endif
@@ -846,7 +988,12 @@ struct activity net_sock_act = {
 	.f_print	= print_net_sock_stats,
 	.f_print_avg	= print_avg_net_sock_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_sock_stats,
+	// .f_print_avg	= json_print_avg_net_sock_stats,
+	.f_print_avg	= json_print_net_sock_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "totsck;tcpsck;udpsck;rawsck;ip-frag;tcp-tw",
 #endif
 	.gtypes_nr	= {STATS_NET_SOCK_ULL, STATS_NET_SOCK_UL, STATS_NET_SOCK_U},
@@ -858,6 +1005,11 @@ struct activity net_sock_act = {
 	.f_svg_print	= svg_print_net_sock_stats,
 	.f_raw_print	= raw_print_net_sock_stats,
 	.f_pcp_print	= pcp_print_net_sock_stats,
+	.f_count_new	= NULL,
+	.desc		= "IPv4 sockets statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_sock_stats,
 	.f_count_new	= NULL,
 	.desc		= "IPv4 sockets statistics",
 #endif
@@ -897,7 +1049,11 @@ struct activity net_ip_act = {
 	.f_print	= print_net_ip_stats,
 	.f_print_avg	= print_net_ip_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_ip_stats,
+	.f_print_avg	= json_print_net_ip_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "irec/s;fwddgm/s;idel/s;orq/s;asmrq/s;asmok/s;fragok/s;fragcrt/s",
 #endif
 	.gtypes_nr	= {STATS_NET_IP_ULL, STATS_NET_IP_UL, STATS_NET_IP_U},
@@ -909,6 +1065,11 @@ struct activity net_ip_act = {
 	.f_svg_print	= svg_print_net_ip_stats,
 	.f_raw_print	= raw_print_net_ip_stats,
 	.f_pcp_print	= pcp_print_net_ip_stats,
+	.f_count_new	= NULL,
+	.desc		= "IPv4 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_ip_stats,
 	.f_count_new	= NULL,
 	.desc		= "IPv4 traffic statistics",
 #endif
@@ -948,7 +1109,11 @@ struct activity net_eip_act = {
 	.f_print	= print_net_eip_stats,
 	.f_print_avg	= print_net_eip_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_eip_stats,
+	.f_print_avg	= json_print_net_eip_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "ihdrerr/s;iadrerr/s;iukwnpr/s;idisc/s;odisc/s;onort/s;asmf/s;fragf/s",
 #endif
 	.gtypes_nr	= {STATS_NET_EIP_ULL, STATS_NET_EIP_UL, STATS_NET_EIP_U},
@@ -960,6 +1125,11 @@ struct activity net_eip_act = {
 	.f_svg_print	= svg_print_net_eip_stats,
 	.f_raw_print	= raw_print_net_eip_stats,
 	.f_pcp_print	= pcp_print_net_eip_stats,
+	.f_count_new	= NULL,
+	.desc		= "IPv4 traffic errors statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_eip_stats,
 	.f_count_new	= NULL,
 	.desc		= "IPv4 traffic errors statistics",
 #endif
@@ -999,7 +1169,11 @@ struct activity net_icmp_act = {
 	.f_print	= print_net_icmp_stats,
 	.f_print_avg	= print_net_icmp_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_icmp_stats,
+	.f_print_avg	= json_print_net_icmp_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "imsg/s;omsg/s;iech/s;iechr/s;oech/s;oechr/s;itm/s;itmr/s;otm/s;"
 		          "otmr/s;iadrmk/s;iadrmkr/s;oadrmk/s;oadrmkr/s",
 #endif
@@ -1012,6 +1186,11 @@ struct activity net_icmp_act = {
 	.f_svg_print	= svg_print_net_icmp_stats,
 	.f_raw_print	= raw_print_net_icmp_stats,
 	.f_pcp_print	= pcp_print_net_icmp_stats,
+	.f_count_new	= NULL,
+	.desc		= "ICMPv4 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_icmp_stats,
 	.f_count_new	= NULL,
 	.desc		= "ICMPv4 traffic statistics",
 #endif
@@ -1051,7 +1230,11 @@ struct activity net_eicmp_act = {
 	.f_print	= print_net_eicmp_stats,
 	.f_print_avg	= print_net_eicmp_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_eicmp_stats,
+	.f_print_avg	= json_print_net_eicmp_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "ierr/s;oerr/s;idstunr/s;odstunr/s;itmex/s;otmex/s;"
 		          "iparmpb/s;oparmpb/s;isrcq/s;osrcq/s;iredir/s;oredir/s",
 #endif
@@ -1064,6 +1247,11 @@ struct activity net_eicmp_act = {
 	.f_svg_print	= svg_print_net_eicmp_stats,
 	.f_raw_print	= raw_print_net_eicmp_stats,
 	.f_pcp_print	= pcp_print_net_eicmp_stats,
+	.f_count_new	= NULL,
+	.desc		= "ICMPv4 traffic errors statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_eicmp_stats,
 	.f_count_new	= NULL,
 	.desc		= "ICMPv4 traffic errors statistics",
 #endif
@@ -1103,7 +1291,11 @@ struct activity net_tcp_act = {
 	.f_print	= print_net_tcp_stats,
 	.f_print_avg	= print_net_tcp_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_tcp_stats,
+	.f_print_avg	= json_print_net_tcp_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "active/s;passive/s;iseg/s;oseg/s",
 #endif
 	.gtypes_nr	= {STATS_NET_TCP_ULL, STATS_NET_TCP_UL, STATS_NET_TCP_U},
@@ -1115,6 +1307,11 @@ struct activity net_tcp_act = {
 	.f_svg_print	= svg_print_net_tcp_stats,
 	.f_raw_print	= raw_print_net_tcp_stats,
 	.f_pcp_print	= pcp_print_net_tcp_stats,
+	.f_count_new	= NULL,
+	.desc		= "TCPv4 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_tcp_stats,
 	.f_count_new	= NULL,
 	.desc		= "TCPv4 traffic statistics",
 #endif
@@ -1154,7 +1351,11 @@ struct activity net_etcp_act = {
 	.f_print	= print_net_etcp_stats,
 	.f_print_avg	= print_net_etcp_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_etcp_stats,
+	.f_print_avg	= json_print_net_etcp_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "atmptf/s;estres/s;retrseg/s;isegerr/s;orsts/s",
 #endif
 	.gtypes_nr	= {STATS_NET_ETCP_ULL, STATS_NET_ETCP_UL, STATS_NET_ETCP_U},
@@ -1166,6 +1367,11 @@ struct activity net_etcp_act = {
 	.f_svg_print	= svg_print_net_etcp_stats,
 	.f_raw_print	= raw_print_net_etcp_stats,
 	.f_pcp_print	= pcp_print_net_etcp_stats,
+	.f_count_new	= NULL,
+	.desc		= "TCPv4 traffic errors statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_etcp_stats,
 	.f_count_new	= NULL,
 	.desc		= "TCPv4 traffic errors statistics",
 #endif
@@ -1205,7 +1411,11 @@ struct activity net_udp_act = {
 	.f_print	= print_net_udp_stats,
 	.f_print_avg	= print_net_udp_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_udp_stats,
+	.f_print_avg	= json_print_net_udp_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "idgm/s;odgm/s;noport/s;idgmerr/s",
 #endif
 	.gtypes_nr	= {STATS_NET_UDP_ULL, STATS_NET_UDP_UL, STATS_NET_UDP_U},
@@ -1217,6 +1427,11 @@ struct activity net_udp_act = {
 	.f_svg_print	= svg_print_net_udp_stats,
 	.f_raw_print	= raw_print_net_udp_stats,
 	.f_pcp_print	= pcp_print_net_udp_stats,
+	.f_count_new	= NULL,
+	.desc		= "UDPv4 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_udp_stats,
 	.f_count_new	= NULL,
 	.desc		= "UDPv4 traffic statistics",
 #endif
@@ -1256,7 +1471,12 @@ struct activity net_sock6_act = {
 	.f_print	= print_net_sock6_stats,
 	.f_print_avg	= print_avg_net_sock6_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_sock6_stats,
+	// .f_print_avg	= json_print_avg_net_sock6_stats,
+	.f_print_avg	= json_print_net_sock6_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "tcp6sck;udp6sck;raw6sck;ip6-frag",
 #endif
 	.gtypes_nr	= {STATS_NET_SOCK6_ULL, STATS_NET_SOCK6_UL, STATS_NET_SOCK6_U},
@@ -1268,6 +1488,11 @@ struct activity net_sock6_act = {
 	.f_svg_print	= svg_print_net_sock6_stats,
 	.f_raw_print	= raw_print_net_sock6_stats,
 	.f_pcp_print	= pcp_print_net_sock6_stats,
+	.f_count_new	= NULL,
+	.desc		= "IPv6 sockets statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_sock6_stats,
 	.f_count_new	= NULL,
 	.desc		= "IPv6 sockets statistics",
 #endif
@@ -1307,7 +1532,11 @@ struct activity net_ip6_act = {
 	.f_print	= print_net_ip6_stats,
 	.f_print_avg	= print_net_ip6_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_ip6_stats,
+	.f_print_avg	= json_print_net_ip6_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "irec6/s;fwddgm6/s;idel6/s;orq6/s;asmrq6/s;asmok6/s;"
 			  "imcpck6/s;omcpck6/s;fragok6/s;fragcr6/s",
 #endif
@@ -1320,6 +1549,11 @@ struct activity net_ip6_act = {
 	.f_svg_print	= svg_print_net_ip6_stats,
 	.f_raw_print	= raw_print_net_ip6_stats,
 	.f_pcp_print	= pcp_print_net_ip6_stats,
+	.f_count_new	= NULL,
+	.desc		= "IPv6 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_ip6_stats,
 	.f_count_new	= NULL,
 	.desc		= "IPv6 traffic statistics",
 #endif
@@ -1359,7 +1593,11 @@ struct activity net_eip6_act = {
 	.f_print	= print_net_eip6_stats,
 	.f_print_avg	= print_net_eip6_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_eip6_stats,
+	.f_print_avg	= json_print_net_eip6_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "ihdrer6/s;iadrer6/s;iukwnp6/s;i2big6/s;idisc6/s;odisc6/s;"
 			  "inort6/s;onort6/s;asmf6/s;fragf6/s;itrpck6/s",
 #endif
@@ -1372,6 +1610,11 @@ struct activity net_eip6_act = {
 	.f_svg_print	= svg_print_net_eip6_stats,
 	.f_raw_print	= raw_print_net_eip6_stats,
 	.f_pcp_print	= pcp_print_net_eip6_stats,
+	.f_count_new	= NULL,
+	.desc		= "IPv6 traffic errors statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_eip6_stats,
 	.f_count_new	= NULL,
 	.desc		= "IPv6 traffic errors statistics",
 #endif
@@ -1411,7 +1654,11 @@ struct activity net_icmp6_act = {
 	.f_print	= print_net_icmp6_stats,
 	.f_print_avg	= print_net_icmp6_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_icmp6_stats,
+	.f_print_avg	= json_print_net_icmp6_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "imsg6/s;omsg6/s;iech6/s;iechr6/s;oechr6/s;igmbq6/s;igmbr6/s;ogmbr6/s;"
 			  "igmbrd6/s;ogmbrd6/s;irtsol6/s;ortsol6/s;irtad6/s;inbsol6/s;onbsol6/s;"
 			  "inbad6/s;onbad6/s",
@@ -1425,6 +1672,11 @@ struct activity net_icmp6_act = {
 	.f_svg_print	= svg_print_net_icmp6_stats,
 	.f_raw_print	= raw_print_net_icmp6_stats,
 	.f_pcp_print	= pcp_print_net_icmp6_stats,
+	.f_count_new	= NULL,
+	.desc		= "ICMPv6 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_icmp6_stats,
 	.f_count_new	= NULL,
 	.desc		= "ICMPv6 traffic statistics",
 #endif
@@ -1464,7 +1716,11 @@ struct activity net_eicmp6_act = {
 	.f_print	= print_net_eicmp6_stats,
 	.f_print_avg	= print_net_eicmp6_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_eicmp6_stats,
+	.f_print_avg	= json_print_net_eicmp6_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "ierr6/s;idtunr6/s;odtunr6/s;itmex6/s;otmex6/s;"
 		          "iprmpb6/s;oprmpb6/s;iredir6/s;oredir6/s;ipck2b6/s;opck2b6/s",
 #endif
@@ -1477,6 +1733,11 @@ struct activity net_eicmp6_act = {
 	.f_svg_print	= svg_print_net_eicmp6_stats,
 	.f_raw_print	= raw_print_net_eicmp6_stats,
 	.f_pcp_print	= pcp_print_net_eicmp6_stats,
+	.f_count_new	= NULL,
+	.desc		= "ICMPv6 traffic errors statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_eicmp6_stats,
 	.f_count_new	= NULL,
 	.desc		= "ICMPv6 traffic errors statistics",
 #endif
@@ -1516,7 +1777,11 @@ struct activity net_udp6_act = {
 	.f_print	= print_net_udp6_stats,
 	.f_print_avg	= print_net_udp6_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_net_udp6_stats,
+	.f_print_avg	= json_print_net_udp6_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "idgm6/s;odgm6/s;noport6/s;idgmer6/s",
 #endif
 	.gtypes_nr	= {STATS_NET_UDP6_ULL, STATS_NET_UDP6_UL, STATS_NET_UDP6_U},
@@ -1528,6 +1793,11 @@ struct activity net_udp6_act = {
 	.f_svg_print	= svg_print_net_udp6_stats,
 	.f_raw_print	= raw_print_net_udp6_stats,
 	.f_pcp_print	= pcp_print_net_udp6_stats,
+	.f_count_new	= NULL,
+	.desc		= "UDPv6 traffic statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_net_udp6_stats,
 	.f_count_new	= NULL,
 	.desc		= "UDPv6 traffic statistics",
 #endif
@@ -1567,7 +1837,12 @@ struct activity pwr_cpufreq_act = {
 	.f_print	= print_pwr_cpufreq_stats,
 	.f_print_avg	= print_avg_pwr_cpufreq_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_cpufreq_stats,
+	// .f_print_avg	= json_print_avg_pwr_cpufreq_stats,
+	.f_print_avg	= json_print_pwr_cpufreq_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "CPU;MHz",
 #endif
 	.gtypes_nr	= {STATS_PWR_CPUFREQ_ULL, STATS_PWR_CPUFREQ_UL, STATS_PWR_CPUFREQ_U},
@@ -1579,6 +1854,11 @@ struct activity pwr_cpufreq_act = {
 	.f_svg_print	= svg_print_pwr_cpufreq_stats,
 	.f_raw_print	= raw_print_pwr_cpufreq_stats,
 	.f_pcp_print	= pcp_print_pwr_cpufreq_stats,
+	.f_count_new	= NULL,
+	.desc		= "CPU clock frequency",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_cpufreq_stats,
 	.f_count_new	= NULL,
 	.desc		= "CPU clock frequency",
 #endif
@@ -1618,7 +1898,12 @@ struct activity pwr_fan_act = {
 	.f_print	= print_pwr_fan_stats,
 	.f_print_avg	= print_avg_pwr_fan_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_fan_stats,
+	// .f_print_avg	= json_print_avg_pwr_fan_stats,
+	.f_print_avg	= json_print_pwr_fan_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "FAN;DEVICE;rpm;drpm",
 #endif
 	.gtypes_nr	= {STATS_PWR_FAN_ULL, STATS_PWR_FAN_UL, STATS_PWR_FAN_U},
@@ -1630,6 +1915,11 @@ struct activity pwr_fan_act = {
 	.f_svg_print	= svg_print_pwr_fan_stats,
 	.f_raw_print	= raw_print_pwr_fan_stats,
 	.f_pcp_print	= pcp_print_pwr_fan_stats,
+	.f_count_new	= NULL,
+	.desc		= "Fans speed",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_fan_stats,
 	.f_count_new	= NULL,
 	.desc		= "Fans speed",
 #endif
@@ -1669,7 +1959,12 @@ struct activity pwr_temp_act = {
 	.f_print	= print_pwr_temp_stats,
 	.f_print_avg	= print_avg_pwr_temp_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_temp_stats,
+	// .f_print_avg	= json_print_avg_pwr_temp_stats,
+	.f_print_avg	= json_print_pwr_temp_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "TEMP;DEVICE;degC;%temp",
 #endif
 	.gtypes_nr	= {STATS_PWR_TEMP_ULL, STATS_PWR_TEMP_UL, STATS_PWR_TEMP_U},
@@ -1681,6 +1976,11 @@ struct activity pwr_temp_act = {
 	.f_svg_print	= svg_print_pwr_temp_stats,
 	.f_raw_print	= raw_print_pwr_temp_stats,
 	.f_pcp_print	= pcp_print_pwr_temp_stats,
+	.f_count_new	= NULL,
+	.desc		= "Devices temperature",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_temp_stats,
 	.f_count_new	= NULL,
 	.desc		= "Devices temperature",
 #endif
@@ -1720,7 +2020,12 @@ struct activity pwr_in_act = {
 	.f_print	= print_pwr_in_stats,
 	.f_print_avg	= print_avg_pwr_in_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_in_stats,
+	// .f_print_avg	= json_print_avg_pwr_in_stats,
+	.f_print_avg	= json_print_pwr_in_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "IN;DEVICE;inV;%in",
 #endif
 	.gtypes_nr	= {STATS_PWR_IN_ULL, STATS_PWR_IN_UL, STATS_PWR_IN_U},
@@ -1732,6 +2037,11 @@ struct activity pwr_in_act = {
 	.f_svg_print	= svg_print_pwr_in_stats,
 	.f_raw_print	= raw_print_pwr_in_stats,
 	.f_pcp_print	= pcp_print_pwr_in_stats,
+	.f_count_new	= NULL,
+	.desc		= "Voltage inputs statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_in_stats,
 	.f_count_new	= NULL,
 	.desc		= "Voltage inputs statistics",
 #endif
@@ -1771,7 +2081,12 @@ struct activity huge_act = {
 	.f_print	= print_huge_stats,
 	.f_print_avg	= print_avg_huge_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_huge_stats,
+	// .f_print_avg	= json_print_avg_huge_stats,
+	.f_print_avg	= json_print_huge_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "kbhugfree;kbhugused;%hugused;kbhugrsvd;kbhugsurp",
 #endif
 	.gtypes_nr	= {STATS_HUGE_ULL, STATS_HUGE_UL, STATS_HUGE_U},
@@ -1783,6 +2098,11 @@ struct activity huge_act = {
 	.f_svg_print	= svg_print_huge_stats,
 	.f_raw_print	= raw_print_huge_stats,
 	.f_pcp_print	= pcp_print_huge_stats,
+	.f_count_new	= NULL,
+	.desc		= "Huge pages utilization",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_huge_stats,
 	.f_count_new	= NULL,
 	.desc		= "Huge pages utilization",
 #endif
@@ -1822,7 +2142,11 @@ struct activity pwr_wghfreq_act = {
 	.f_print	= print_pwr_wghfreq_stats,
 	.f_print_avg	= print_pwr_wghfreq_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_wghfreq_stats,
+	.f_print_avg	= json_print_pwr_wghfreq_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "CPU;wghMHz",
 #endif
 	.gtypes_nr	= {STATS_PWR_WGHFREQ_ULL, STATS_PWR_WGHFREQ_UL, STATS_PWR_WGHFREQ_U},
@@ -1834,6 +2158,11 @@ struct activity pwr_wghfreq_act = {
 	.f_svg_print	= NULL,
 	.f_raw_print	= raw_print_pwr_wghfreq_stats,
 	.f_count_new	= NULL,
+	.desc		= "CPU weighted frequency",
+#endif
+	.name		= "A_PWR_FREQ",
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_wghfreq_stats,
 	.desc		= "CPU weighted frequency",
 #endif
 	.name		= "A_PWR_FREQ",
@@ -1872,7 +2201,12 @@ struct activity pwr_usb_act = {
 	.f_print	= print_pwr_usb_stats,
 	.f_print_avg	= print_avg_pwr_usb_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_usb_stats,
+	// .f_print_avg	= json_print_avg_pwr_usb_stats,
+	.f_print_avg	= json_print_pwr_usb_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "manufact;product;BUS;idvendor;idprod;maxpower",
 #endif
 	.gtypes_nr	= {STATS_PWR_USB_ULL, STATS_PWR_USB_UL, STATS_PWR_USB_U},
@@ -1884,6 +2218,11 @@ struct activity pwr_usb_act = {
 	.f_svg_print	= NULL,
 	.f_raw_print	= raw_print_pwr_usb_stats,
 	.f_pcp_print	= pcp_print_pwr_usb_stats,
+	.f_count_new	= NULL,
+	.desc		= "USB devices",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_usb_stats,
 	.f_count_new	= NULL,
 	.desc		= "USB devices",
 #endif
@@ -1923,7 +2262,12 @@ struct activity filesystem_act = {
 	.f_print	= print_filesystem_stats,
 	.f_print_avg	= print_avg_filesystem_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_filesystem_stats,
+	// .f_print_avg	= json_print_avg_filesystem_stats,
+	.f_print_avg	= json_print_filesystem_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "FILESYSTEM;MBfsfree;MBfsused;%fsused;%ufsused;Ifree;Iused;%Iused|"
 			  "MOUNTPOINT;MBfsfree;MBfsused;%fsused;%ufsused;Ifree;Iused;%Iused",
 #endif
@@ -1936,6 +2280,11 @@ struct activity filesystem_act = {
 	.f_svg_print	= svg_print_filesystem_stats,
 	.f_raw_print	= raw_print_filesystem_stats,
 	.f_pcp_print	= pcp_print_filesystem_stats,
+	.f_count_new	= count_new_filesystem,
+	.desc		= "Filesystems statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_filesystem_stats,
 	.f_count_new	= count_new_filesystem,
 	.desc		= "Filesystems statistics",
 #endif
@@ -1975,7 +2324,11 @@ struct activity fchost_act = {
 	.f_print	= print_fchost_stats,
 	.f_print_avg	= print_fchost_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_fchost_stats,
+	.f_print_avg	= json_print_fchost_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "FCHOST;fch_rxf/s;fch_txf/s;fch_rxw/s;fch_txw/s",
 #endif
 	.gtypes_nr	= {STATS_FCHOST_ULL, STATS_FCHOST_UL, STATS_FCHOST_U},
@@ -1987,6 +2340,11 @@ struct activity fchost_act = {
 	.f_svg_print	= svg_print_fchost_stats,
 	.f_raw_print	= raw_print_fchost_stats,
 	.f_pcp_print	= pcp_print_fchost_stats,
+	.f_count_new	= count_new_fchost,
+	.desc		= "Fibre Channel HBA statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_fchost_stats,
 	.f_count_new	= count_new_fchost,
 	.desc		= "Fibre Channel HBA statistics",
 #endif
@@ -2027,7 +2385,12 @@ struct activity softnet_act = {
 	.f_print	= print_softnet_stats,
 	.f_print_avg	= print_avg_softnet_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_softnet_stats,
+	// .f_print_avg	= json_print_avg_softnet_stats,
+	.f_print_avg	= json_print_softnet_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "CPU;total/s;dropd/s;squeezd/s;rx_rps/s;flw_lim/s;blg_len",
 #endif
 	.gtypes_nr	= {STATS_SOFTNET_ULL, STATS_SOFTNET_UL, STATS_SOFTNET_U},
@@ -2039,6 +2402,11 @@ struct activity softnet_act = {
 	.f_svg_print	= svg_print_softnet_stats,
 	.f_raw_print	= raw_print_softnet_stats,
 	.f_pcp_print	= pcp_print_softnet_stats,
+	.f_count_new	= NULL,
+	.desc		= "Software-based network processing statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_softnet_stats,
 	.f_count_new	= NULL,
 	.desc		= "Software-based network processing statistics",
 #endif
@@ -2078,7 +2446,12 @@ struct activity psi_cpu_act = {
 	.f_print	= print_psicpu_stats,
 	.f_print_avg	= print_avg_psicpu_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_psicpu_stats,
+	// .f_print_avg	= json_print_avg_psicpu_stats,
+	.f_print_avg	= json_print_psicpu_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "%scpu-10;%scpu-60;%scpu-300;%scpu",
 #endif
 	.gtypes_nr	= {STATS_PSI_CPU_ULL, STATS_PSI_CPU_UL, STATS_PSI_CPU_U},
@@ -2090,6 +2463,11 @@ struct activity psi_cpu_act = {
 	.f_svg_print	= svg_print_psicpu_stats,
 	.f_raw_print	= raw_print_psicpu_stats,
 	.f_pcp_print	= pcp_print_psicpu_stats,
+	.f_count_new	= NULL,
+	.desc		= "Pressure-stall CPU statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_psicpu_stats,
 	.f_count_new	= NULL,
 	.desc		= "Pressure-stall CPU statistics",
 #endif
@@ -2129,7 +2507,12 @@ struct activity psi_io_act = {
 	.f_print	= print_psiio_stats,
 	.f_print_avg	= print_avg_psiio_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_psiio_stats,
+	// .f_print_avg	= json_print_avg_psiio_stats,
+	.f_print_avg	= json_print_psiio_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "%sio-10;%sio-60;%sio-300;%sio;%fio-10;%fio-60;%fio-300;%fio",
 #endif
 	.gtypes_nr	= {STATS_PSI_IO_ULL, STATS_PSI_IO_UL, STATS_PSI_IO_U},
@@ -2141,6 +2524,11 @@ struct activity psi_io_act = {
 	.f_svg_print	= svg_print_psiio_stats,
 	.f_raw_print	= raw_print_psiio_stats,
 	.f_pcp_print	= pcp_print_psiio_stats,
+	.f_count_new	= NULL,
+	.desc		= "Pressure-stall I/O statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_psiio_stats,
 	.f_count_new	= NULL,
 	.desc		= "Pressure-stall I/O statistics",
 #endif
@@ -2180,7 +2568,12 @@ struct activity psi_mem_act = {
 	.f_print	= print_psimem_stats,
 	.f_print_avg	= print_avg_psimem_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_psimem_stats,
+	// .f_print_avg	= json_print_avg_psimem_stats,
+	.f_print_avg	= json_print_psimem_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "%smem-10;%smem-60;%smem-300;%smem;%fmem-10;%fmem-60;%fmem-300;%fmem",
 #endif
 	.gtypes_nr	= {STATS_PSI_MEM_ULL, STATS_PSI_MEM_UL, STATS_PSI_MEM_U},
@@ -2192,6 +2585,11 @@ struct activity psi_mem_act = {
 	.f_svg_print	= svg_print_psimem_stats,
 	.f_raw_print	= raw_print_psimem_stats,
 	.f_pcp_print	= pcp_print_psimem_stats,
+	.f_count_new	= NULL,
+	.desc		= "Pressure-stall memory statistics",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_psimem_stats,
 	.f_count_new	= NULL,
 	.desc		= "Pressure-stall memory statistics",
 #endif
@@ -2231,7 +2629,12 @@ struct activity pwr_bat_act = {
 	.f_print	= print_pwr_bat_stats,
 	.f_print_avg	= print_avg_pwr_bat_stats,
 #endif
-#if defined(SOURCE_SAR) || defined(SOURCE_SADF)
+#ifdef SOURCE_SAF
+	.f_print	    = json_print_pwr_bat_stats,
+	// .f_print_avg	= json_print_avg_pwr_bat_stats,
+	.f_print_avg	= json_print_pwr_bat_stats,
+#endif
+#if defined(SOURCE_SAR) || defined(SOURCE_SADF) || defined(SOURCE_SAF)
 	.hdr_line	= "BAT;%cap;cap/min;status",
 #endif
 	.gtypes_nr	= {STATS_PWR_BAT_ULL, STATS_PWR_BAT_UL, STATS_PWR_BAT_U},
@@ -2243,6 +2646,11 @@ struct activity pwr_bat_act = {
 	.f_svg_print	= svg_print_pwr_bat_stats,
 	.f_raw_print	= raw_print_pwr_bat_stats,
 	.f_pcp_print	= pcp_print_pwr_bat_stats,
+	.f_count_new	= count_new_bat,
+	.desc		= "Batteries capacity",
+#endif
+#ifdef SOURCE_SAF
+	.f_json_print	= json_print_pwr_bat_stats,
 	.f_count_new	= count_new_bat,
 	.desc		= "Batteries capacity",
 #endif

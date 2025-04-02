@@ -1,5 +1,5 @@
 /*
- * sar/sadc: Report system activity
+ * saf/sadc: Report system activity
  * (C) 1999-2025 by Sebastien Godard (sysstat <at> orange.fr)
  */
 
@@ -386,8 +386,8 @@ struct sa_item {
  ***************************************************************************
  */
 
-/* Number of output formats */
-#define NR_FMT	9
+/* Number of output formats (было 9) */
+#define NR_FMT	10
 
 /* Output formats */
 enum {
@@ -400,7 +400,8 @@ enum {
 	F_CONV_OUTPUT	= 6,
 	F_SVG_OUTPUT	= 7,
 	F_RAW_OUTPUT	= 8,
-	F_PCP_OUTPUT	= 9
+	F_PCP_OUTPUT	= 9,
+    F_SAF_OUTPUT    = 10
 };
 
 /* Structure for SVG specific parameters */
@@ -1645,7 +1646,7 @@ void print_report_hdr
 void print_sar_comment
 	(int *, int, char *, char *, char *, char *, struct file_header *,
 	 struct record_header *);
-__printf_funct_t print_sar_restart
+__printf_funct_t print_saf_restart
 	(int *, int, char *, char *, char *, struct file_header *, struct record_header *);
 int print_special_record
 	(struct record_header *, uint64_t, struct tstamp_ext *, struct tstamp_ext *,

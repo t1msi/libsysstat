@@ -36,7 +36,7 @@
 
 #include "version.h"
 #include "common.h"
-#include "ioconf.h"
+// #include "ioconf.h"
 
 #ifdef USE_NLS
 #include <locale.h>
@@ -1180,22 +1180,22 @@ char *get_devname_from_sysfs(unsigned int major, unsigned int minor)
  * or a string with the following format devM-n.
  ***************************************************************************
  */
-char *get_devname(unsigned int major, unsigned int minor)
-{
-	static char buf[32];
-	char *name;
-
-	name = get_devname_from_sysfs(major, minor);
-	if (name != NULL)
-		return (name);
-
-	name = ioc_name(major, minor);
-	if ((name != NULL) && strcmp(name, K_NODEV))
-		return (name);
-
-	snprintf(buf, sizeof(buf), "dev%u-%u", major, minor);
-	return (buf);
-}
+// char *get_devname(unsigned int major, unsigned int minor)
+// {
+// 	static char buf[32];
+// 	char *name;
+//
+// 	name = get_devname_from_sysfs(major, minor);
+// 	if (name != NULL)
+// 		return (name);
+//
+// 	name = ioc_name(major, minor);
+// 	if ((name != NULL) && strcmp(name, K_NODEV))
+// 		return (name);
+//
+// 	snprintf(buf, sizeof(buf), "dev%u-%u", major, minor);
+// 	return (buf);
+// }
 
 /*
  * **************************************************************************
@@ -1225,7 +1225,7 @@ char *get_device_name(unsigned int major, unsigned int minor, unsigned long long
 	static char sid[64], dname[MAX_NAME_LEN];
 
 	if (disp_persist_name) {
-		persist_dev_name = get_persistent_name_from_pretty(get_devname(major, minor));
+		// persist_dev_name = get_persistent_name_from_pretty(get_devname(major, minor));
 	}
 
 	if (persist_dev_name) {
@@ -1249,7 +1249,7 @@ char *get_device_name(unsigned int major, unsigned int minor, unsigned long long
 				dm_major = get_devmap_major();
 			}
 			if (major == dm_major) {
-				dev_name = transform_devmapname(major, minor);
+				// dev_name = transform_devmapname(major, minor);
 			}
 		}
 
@@ -1258,12 +1258,12 @@ char *get_device_name(unsigned int major, unsigned int minor, unsigned long long
 				dev_name = dflt_name;
 			}
 			else {
-				dev_name = get_devname(major, minor);
+				// dev_name = get_devname(major, minor);
 			}
 		}
 	}
 
-	strncpy(dname, dev_name, sizeof(dname));
+	// strncpy(dname, dev_name, sizeof(dname));
 	dname[sizeof(dname) - 1] = '\0';
 
 	while ((bang = strchr(dname, '!'))) {
