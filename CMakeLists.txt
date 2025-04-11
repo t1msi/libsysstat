@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(stats LANGUAGES C CXX)
+project(stats LANGUAGES C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -11,11 +11,13 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/lib/sysstat/")
 
 # Change path from /src if nedeed, or add more directories
 file(GLOB main_sources
-        "${CMAKE_SOURCE_DIR}/src/main.cpp"
+        "${CMAKE_SOURCE_DIR}/src/main.c"
+        "${CMAKE_SOURCE_DIR}/src/netcat.c"
         )
 
 add_executable(stats
         ${main_sources}
+        "include/netcat.h"
 )
 
 # add_library(stats SHARED
@@ -30,7 +32,9 @@ target_include_directories(stats
     PUBLIC    "${CMAKE_SOURCE_DIR}/lib/sysstat/include"
 )
 
-target_link_libraries(stats)
+set_target_properties(stats PROPERTIES LINKER_LANGUAGE C)
+target_link_libraries(stats PUBLIC pthread)
+target_compile_definitions(stats PUBLIC SAF_PATH="/home/user/app/stats/lib/sysstat/saf")
 
 # If you have precompiled headers you can add them like this
 # target_precompiled_headers(stats PRIVATE "${CMAKE_SOURCE_DIR}/src/pch.h")
