@@ -3,7 +3,10 @@ project(sysstat LANGUAGES C)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-include(CheckSourceCompiles)
+# На Ubuntu 18.04 нет CheckSourceCompiles
+#define SYSFS_PWR_SUPPLY    PRE "/home/user/app/stats/tmp/power_supply"
+# sudo ln -s /sys/class/power_supply/battery/ /home/user/app/stats/tmp/power_supply/BAT0
+# include(CheckSourceCompiles)
 
 file(GLOB sadc_sources
         "src/sadc.c"
@@ -34,27 +37,29 @@ file(GLOB saf_sources
         "src/rd_stats.c"
         "src/json_stats.c"
 )
+set(HAVE_SENSORS_VAR TRUE)
+# check_source_compiles(C "
+# #include <sensors/sensors.h>
+# #include <sensors/error.h>
+#
+# int main() {
+#     int* tmp;
+#     sensors_cleanup();
+#     sensors_get_detected_chips((struct sensors_chip_name*)\"arm2\", tmp);
+#
+#     return 0;
+# }
+# "
+# HAVE_SENSORS_VAR
+# )
 
-check_source_compiles(C "
-#include <sensors/sensors.h>
-#include <sensors/error.h>
-
-int main() {
-    int* tmp;
-    sensors_cleanup();
-    sensors_get_detected_chips((struct sensors_chip_name*)\"arm2\", tmp);
-
-    return 0;
-}
-"
-HAVE_SENSORS_VAR
-)
+add_compile_options(-Wall -Wstrict-prototypes -pipe -O2 -fno-tree-slp-vectorize)
 
 add_executable(sadc
     ${sadc_sources}
     "include/common.h"
-    "include/rd_sensors.h"
     "include/rd_stats.h"
+    "include/rd_sensors.h"
     # "include/ioconf.h"
     # "include/sysconfig.h"
     "include/systest.h"
@@ -65,6 +70,7 @@ add_executable(sadc
 #DEBUG USE_NLS
 set_target_properties(sadc PROPERTIES LINKER_LANGUAGE C)
 target_compile_definitions(sadc PUBLIC SOURCE_SADC SA_DIR="/var/log/sa")
+# target_compile_definitions(sadc PUBLIC DEBUG)
 target_include_directories(sadc PUBLIC "include/")
 
 # only sadc and rd_sensors
@@ -81,8 +87,8 @@ add_executable(saf
     "include/saf.h"
     # sar
     "include/common.h"
-    "include/rd_sensors.h"
     "include/rd_stats.h"
+    "include/rd_sensors.h"
     # "include/ioconf.h"
     # "include/sysconfig.h"
     "include/systest.h"
@@ -94,6 +100,8 @@ add_executable(saf
 )
 
 set_target_properties(saf PROPERTIES LINKER_LANGUAGE C)
+# target_compile_definitions(saf PUBLIC DEBUG)
 target_compile_definitions(saf PUBLIC SOURCE_SAF SA_DIR="/var/log/sa" SADC_PATH="/home/refty/src/stats/lib/sysstat/sadc" OBJ)
+#target_compile_definitions(saf PUBLIC SOURCE_SAF SA_DIR="/var/log/sa" SADC_PATH="/home/user/app/stats/lib/sysstat/sadc" OBJ)
 target_include_directories(saf PUBLIC "include/")
 

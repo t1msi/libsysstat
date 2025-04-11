@@ -85,6 +85,7 @@
 #define SYSFS_PRODUCT		"product"
 #define SYSFS_FCHOST		PRE "/sys/class/fc_host"
 #define SYSFS_PWR_SUPPLY	PRE "/sys/class/power_supply"
+// #define SYSFS_PWR_SUPPLY    PRE "/home/user/app/stats/tmp/power_supply"
 #define BAT_CAPACITY		"%s/%s/capacity"
 #define BAT_STATUS		"%s/%s/status"
 

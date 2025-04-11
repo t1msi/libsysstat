@@ -36,6 +36,8 @@
 extern uint64_t flags;
 extern char bat_status[][16];
 
+extern int xinit;
+
 /*
  ***************************************************************************
  * Open or close "network" markup.
@@ -143,6 +145,16 @@ __print_funct_t json_print_cpu_stats(struct activity *a, int curr, int tab,
 	char cpuno[16];
 
 	xprintf(tab++, "\"cpu-load\": [");
+
+	if (xinit && a->nr_spalloc) {
+		/*
+		 * Init min and max values.
+		 * Used only when reading from a file: Init happens when there is a
+		 * LINUX RESTART message in file. The min and max values are those for
+		 * the statistics located between two LINUX RESTART messages.
+		 */
+		init_extrema_values(a, a->nr_spalloc * a->nr2 * a->xnr);
+	}
 
 	/* @nr[curr] cannot normally be greater than @nr_ini */
 	if (a->nr[curr] > a->nr_ini) {

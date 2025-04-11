@@ -222,29 +222,41 @@ struct report_format sar_fmt = {
  */
 struct report_format json_fmt = {
 	.id		= F_JSON_OUTPUT,
-	.options	= FO_HEADER_ONLY + FO_LOCAL_TIME + FO_TEST_MARKUP +
-			  FO_LC_NUMERIC_C,
+	.options	= 0,
 	.f_header	= print_json_header,
 	.f_statistics	= print_json_statistics,
 	.f_timestamp	= print_json_timestamp,
 	.f_restart	= print_json_restart,
 	.f_comment	= print_json_comment,
+	.f_display	= NULL
 	// .f_display	= logic1_display_loop
 	// .f_display	= logic1_display_loop
 };
+struct report_format hdr_fmt = {
+.id     = F_HEADER_OUTPUT,
+.options    = FO_HEADER_ONLY + FO_LOCAL_TIME + FO_TEST_MARKUP +
+                  FO_LC_NUMERIC_C,
+.f_header   = print_json_header,
+.f_statistics   = NULL,
+.f_timestamp    = NULL,
+.f_restart  = NULL,
+.f_comment  = NULL,
+.f_display  = NULL
+};
+
 /*
  * Display only datafile header.
  */
-struct report_format hdr_fmt = {
-	.id		= F_HEADER_OUTPUT,
-	.options	= FO_HEADER_ONLY,
-	.f_header	= print_hdr_header,
-	.f_statistics	= NULL,
-	.f_timestamp	= NULL,
-	.f_restart	= NULL,
-	.f_comment	= NULL,
-	.f_display	= NULL
-};
+// struct report_format hdr_fmt = {
+// 	.id		= F_HEADER_OUTPUT,
+// 	.options	= FO_HEADER_ONLY,
+// 	.f_header	= print_hdr_header,
+// 	.f_statistics	= NULL,
+// 	.f_timestamp	= NULL,
+// 	.f_restart	= NULL,
+// 	.f_comment	= NULL,
+// 	.f_display	= NULL
+// };
 /*
  * Array of output formats.
  */

@@ -33,6 +33,7 @@
 // additional from sadf
 #include <stdarg.h>
 
+#include "common.h"
 #include "version.h"
 #include "sa.h"
 
@@ -529,6 +530,13 @@ int write_stats(int curr, int read_from_file, long *cnt, enum time_mode use_tm_s
 	/* Test stdout */
 	TEST_STDOUT(STDOUT_FILENO);
 
+	int act_count = 0;
+    int c_printed = 0;
+
+	for (i = 0; i < NR_ACT; i++)
+        if (IS_SELECTED(act[i]->options) && (act[i]->nr[curr] > 0))
+            act_count++;
+
 	for (i = 0; i < NR_ACT; i++) {
 
 		if ((act_id != ALL_ACTIVITIES) && (act[i]->id != act_id))
@@ -538,6 +546,10 @@ int write_stats(int curr, int read_from_file, long *cnt, enum time_mode use_tm_s
 			/* Display current activity statistics */
 			(*act[i]->f_print)(act[i], !curr, curr, itv);
 			rc = 1;
+            if (c_printed < act_count - 1) {
+                printf(",\n");
+                c_printed++;
+            }
 		}
 	}
 
@@ -864,6 +876,7 @@ void handle_curr_act_stats(int ifd, off_t fpos, int *curr, long *cnt, int *eosaf
 					 &file_hdr, arch_64, endian_mismatch, UEOF_STOP, b_size,
 					 flags, &json_fmt);
 		rtype = record_hdr[*curr].record_type;
+		// rtype = R_RESTART;
 
 		if ((lines >= rows) || !lines) {
 			lines = 0;
@@ -1101,8 +1114,14 @@ void read_stats_from_file(char from_file[])
 	allocate_structures(act, flags);
 
 	/* Print report header */
-	print_report_hdr(flags, &(rectime.tm_time), &file_hdr);
+	// print_report_hdr(flags, &(rectime.tm_time), &file_hdr);
+ 
+	// print_gal_header(&(rectime.tm_time), file_hdr.sa_sysname, file_hdr.sa_release,
+	// 		     file_hdr.sa_nodename, file_hdr.sa_machine, file_hdr.sa_cpu_nr,
+	// 		     DISPLAY_JSON_OUTPUT(X_D_JSON_OUTPUT));
+			     // DISPLAY_JSON_OUTPUT(flags));
 
+    write_sample_timestamp(0, &(rectime.tm_time), X_D_JSON_OUTPUT);
 	/* Read system statistics from file */
 	do {
 		/*
@@ -1116,7 +1135,8 @@ void read_stats_from_file(char from_file[])
 				return;
 			}
 
-			rtype = record_hdr[0].record_type;
+			// rtype = record_hdr[0].record_type;
+            rtype = R_RESTART;
 			if ((rtype == R_RESTART) || (rtype == R_COMMENT)) {
 				print_special_record(&record_hdr[0], flags,
 						     &tm_start, &tm_end, rtype, ifd,
@@ -1287,9 +1307,18 @@ void read_stats(void)
 	/* No need to init min/max values. Already done in allocate_structures() */
 	xinit = FALSE;
 
-	/* Print report header */
-	print_report_hdr(flags, &(rectime.tm_time), &file_hdr);
+    /* Get time */
+    get_xtime(&(rectime.tm_time), 0, LOCAL_TIME);
 
+	/* Print report header */
+	// print_report_hdr(flags, &(rectime.tm_time), &file_hdr);
+
+	// print_gal_header(&(rectime.tm_time), file_hdr.sa_sysname, file_hdr.sa_release,
+	// 		     file_hdr.sa_nodename, file_hdr.sa_machine, file_hdr.sa_cpu_nr,
+	// 		     DISPLAY_JSON_OUTPUT(X_D_JSON_OUTPUT));
+
+
+    // printf(",");
 	/* Read system statistics sent by the data collector */
 	read_sadc_stat_bunch(0);
 
@@ -1329,8 +1358,11 @@ void read_stats(void)
 			}
 			lines++;
 		}
+        printf("{\n");
+        write_sample_timestamp(1, &(rectime.tm_time), X_D_JSON_OUTPUT);
 		write_stats(curr, USE_SADC, &count, NO_TIME, tm_end.use,
 			    NO_RESET, ALL_ACTIVITIES, TRUE);
+        printf("\n}\n");
 
 		if ((tm_end.use != NO_TIME) && (datecmp(&rectime, &tm_end, FALSE) == 0)) {
 			/*
@@ -1356,7 +1388,15 @@ void read_stats(void)
 		}
 		if (count) {
 			curr ^= 1;
+            // __pause();
 		}
+        if (sigint_caught) {
+            /* SIGINT signal caught => Terminate JSON output properly */
+            count = 0;
+        }
+        // else if (DISPLAY_JSON_OUTPUT(X_D_JSON_OUTPUT)) {
+        //     printf(",");
+        // }
 	}
 	while (count);
 
@@ -1365,10 +1405,15 @@ void read_stats(void)
 	 * At least one line of stats must have been displayed for this.
 	 * (There may be no lines at all if we press Ctrl/C immediately).
 	 */
-	dish = dis_hdr;
-	if (avg_count) {
-		write_stats_avg(curr, USE_SADC, ALL_ACTIVITIES);
-	}
+	// dish = dis_hdr;
+	// if (avg_count) {
+	// 	write_stats_avg(curr, USE_SADC, ALL_ACTIVITIES);
+	// }
+
+    // From iostat
+	// if (DISPLAY_JSON_OUTPUT(X_D_JSON_OUTPUT)) {
+	// 	printf("}\t\t\t]\n\t\t}\n\t]\n}}\n");
+	// }
 }
 
 /*
