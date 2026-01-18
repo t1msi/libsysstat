@@ -1,7 +1,6 @@
 /*
  * saf: report system activity formatted
  * (C) 1999-2025 by Sebastien GODARD (sysstat <at> orange.fr)
- * 2025 patched by refty
  *
  ***************************************************************************
  * This program is free software; you can redistribute it and/or modify it *

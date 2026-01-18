@@ -101,6 +101,6 @@ add_executable(saf
 
 set_target_properties(saf PROPERTIES LINKER_LANGUAGE C)
 # target_compile_definitions(saf PUBLIC DEBUG)
-target_compile_definitions(saf PUBLIC SOURCE_SAF SA_DIR="/var/log/sa" SADC_PATH="/home/user/app/stats/lib/sysstat/sadc" OBJ)
+target_compile_definitions(saf PUBLIC SOURCE_SAF SA_DIR="/var/log/sa" SADC_PATH="${CMAKE_SOURCE_DIR}/lib/sysstat/sadc" OBJ)
 target_include_directories(saf PUBLIC "include/")
 

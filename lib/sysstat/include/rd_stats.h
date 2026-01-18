@@ -49,7 +49,8 @@
  */
 
 /* Files */
-#define SERIAL			PRE "/proc/tty/driver/serial"
+// #define SERIAL			PRE "/proc/tty/driver/serial"
+#define SERIAL			PRE "/proc/tty/driver/ttyAMA"
 #define FDENTRY_STATE		PRE "/proc/sys/fs/dentry-state"
 #define FFILE_NR		PRE "/proc/sys/fs/file-nr"
 #define FINODE_STATE		PRE "/proc/sys/fs/inode-state"
@@ -84,8 +85,8 @@
 #define SYSFS_MANUFACTURER	"manufacturer"
 #define SYSFS_PRODUCT		"product"
 #define SYSFS_FCHOST		PRE "/sys/class/fc_host"
-#define SYSFS_PWR_SUPPLY	PRE "/sys/class/power_supply"
-// #define SYSFS_PWR_SUPPLY    PRE "/home/user/app/stats/tmp/power_supply"
+// #define SYSFS_PWR_SUPPLY	PRE "/sys/class/power_supply"
+#define SYSFS_PWR_SUPPLY    PRE "/home/user/app/stats/tmp/BAT0"
 #define BAT_CAPACITY		"%s/%s/capacity"
 #define BAT_STATUS		"%s/%s/status"
 

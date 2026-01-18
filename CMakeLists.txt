@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(stats LANGUAGES C)
+project(stats VERSION 0.1 LANGUAGES C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -20,10 +20,6 @@ add_executable(stats
         "include/netcat.h"
 )
 
-# add_library(stats SHARED
-#     ${main_sources}
-# )
-
 # install(TARGETS stats DESTINATION .)
 
 # Add more include directories if needed
@@ -34,7 +30,7 @@ target_include_directories(stats
 
 set_target_properties(stats PROPERTIES LINKER_LANGUAGE C)
 target_link_libraries(stats PUBLIC pthread)
-target_compile_definitions(stats PUBLIC SAF_PATH="/home/user/app/stats/lib/sysstat/saf")
+target_compile_definitions(stats PUBLIC SAF_PATH="${CMAKE_SOURCE_DIR}/lib/sysstat/saf")
 
 # If you have precompiled headers you can add them like this
 # target_precompiled_headers(stats PRIVATE "${CMAKE_SOURCE_DIR}/src/pch.h")

@@ -1,24 +1,15 @@
-## sysstat - System performance tools for the Linux operating system
-(C) 1999-2025 Sebastien GODARD (sysstat (at) orange (dot) fr)
-2025 - patched by refty
+## stats
+### General
+- **stats** - переделаный проект https://github.com/sysstat/sysstat. Запускается через как сервис и посылает данные о системе через udp в json-формате на определенный порт
 
-### Introduction
+Проект состоит из нескольких модулей:
+- stats - отправка json по сети
+- saf - форматирование статистики в json
+- sadc - сбор статистики
 
-The sysstat package contains various utilities, common to many commercial Unixes, to monitor system performance and usage activity:
+Каждый модуль, кроме stats, отправляет данные в STDOUT, а получает через STDIN.
 
-* **iostat** reports CPU statistics and input/output statistics for block devices and partitions.
-* **mpstat** reports individual or combined processor related statistics.
-* **pidstat** reports statistics for Linux tasks (processes) : I/O, CPU, memory, etc.
-
-Sysstat also contains tools you can schedule via cron or systemd to collect and historize performance and activity data:
-
-* **sar** collects, reports and saves system activity information (see below a list of metrics collected by sar).
-* **sadc** is the system activity data collector, used as a backend for sar.
-* **sadf** displays data collected by sar in multiple formats (CSV, XML, JSON, etc.) and can be used for data exchange with other programs. This command can also be used to draw graphs for the various activities collected by sar using SVG (Scalable Vector Graphics) format.
-
-Default sampling interval is 10 minutes but this can be changed of course (it can be as small as 1 second).
-
-#### System statistics collected by sar:
+System statistics collected by saf:
 - Input / Output and transfer rate statistics (global, per device, per partition and per network filesystem)
 - CPU statistics (global and per CPU), including support for virtualization architectures
 - Memory, hugepages and swap space utilization statistics
@@ -39,21 +30,66 @@ Default sampling interval is 10 minutes but this can be changed of course (it ca
 - Filesystems utilization (inodes and blocks)
 - Pressure-Stall Information statistics
 
-#### Sysstat key features:
-- Display average statistics values at the end of the reports.
-- On-the-fly detection of new devices (disks, network interfaces, etc.) that are created or registered dynamically.
-- Support for UP and SMP machines, including machines with hyperthreaded or multi-core processors.
-- Support for hotplug CPUs (it detects automagically processors that are disabled or enabled on the fly) and tickless CPUs.
-- Works on many different architectures, whether 32- or 64-bit.
-- Needs very little CPU time to run (written in C).
-- System statistics collected by sar/sadc can be saved in a file for future inspection. You can configure the length of data history to keep. There is no limit for this history length but the available space on your storage device.
-- System statistics collected by sar/sadc can be exported in various different formats (CSV, XML, JSON, SVG, etc.). DTD and XML Schema documents are included in sysstat package. JSON output format is also available for mpstat and iostat commands.
-- iostat can display statistics for devices managed by drivers in userspace like spdk.
-- Smart color output for easier statistics reading.
-
 ### Build
+Сборка
 ```
+cmake .
 cmake --build .
-
+```
+Очистка от CMake файлов и бинарников
+```
 cmake --build . --target clean
 ```
+
+## Установка
+
+>**Внимание:**
+- Установочный скрипт только для Debian-based систем и aarch64 архитектуры. Для OpenSUSE надо изменить название libsensors4-dev на libsensors4-devel
+
+Скачать папку с проектом в ~/app
+
+```
+cd ~/app/
+git clone git@github.com:t1msi/libsysstat.git stats/
+```
+
+Для установки в систему необходимо выполнить скрипт ```install.bash```, расположенный в папке ```scripts```. Ввести пароль для sudo
+
+```
+cd ~/app/stats/scripts
+bash install.bash
+```
+
+Можно сделать uninstall из системы, необходимо выполнить скрипт ```uninstall.bash```
+
+## Запуск
+- Сервис stats автоматически начнет свою работу. После перезагрузки тоже. По умолчанию запускается на адрес ```127.0.0.1:10000```
+
+### Troubleshooting
+- На порт не приходят данные
+Нужно перезапустить сервис
+```
+sudo systemctl restart stats
+```
+- На показываются данные о батарее
+На Ubuntu Bionic 18.04.06 LTS батарея находится в корне /sys/class/power_supply, sadc ожидает увидеть подпапку power_supply/BAT0. Проверьте что ссылка с именем BAT0 на power_supply в папке stats/tmp создалась
+
+Такая же ситуация с Serial на raspbian
+Но нужно уже проверить в include/rd_stats.h путь
+```
+#define SERIAL /proc/tty/driver/ttyAMA
+```
+- Проблема с CMakeCache, после того как сделали rsync во время разработки. Не собирается stats
+```
+cd projects/stats/
+rm -rf CMakeFiles/
+cmake .
+cmake --build . --target clean-all
+cmake --build .
+```
+
+### Known bugs
+- Почему то нагрузка на CPU неправильно форматируется, из за чего idle показывается неправильно. Когда пытался дебажить, то дошел до пересчета jiffies, возможно там проблема
+- Отсутствует pretty-print, из-за чего числа, которые находятся внутри json невозможно интерпретировать правильно. Но это относится не ко всем топикам
+
+
